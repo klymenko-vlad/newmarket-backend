@@ -20,7 +20,7 @@ authRouter.get(
     try {
       const user = await UserModel.findById(userId).select('-__v');
 
-      return res.status(200).json({ user });
+      return res.status(200).json(user);
     } catch (error) {
       console.error(error);
       return res.status(500).send('Server error');
@@ -29,7 +29,7 @@ authRouter.get(
 );
 
 authRouter.post('/', async (req: Request, res: Response) => {
-  const { email, password } = req.body.user;
+  const { email, password } = req.body;
 
   if (!validateEmail(email)) return res.status(401).send('Invalid email');
   if (password.length < 6) {
@@ -41,12 +41,18 @@ authRouter.post('/', async (req: Request, res: Response) => {
       '+password',
     );
 
-    if (!user) return res.status(401).json({ error: 'No such user' });
+    if (!user)
+      return res
+        .status(401)
+        .json({ error: 'Invalid credential. Please try again' });
 
     const isPassword = await bcrypt.compare(password, user.password);
 
-    if (!isPassword)
-      return res.status(401).json({ error: 'Invalid credential' });
+    if (!isPassword) {
+      return res
+        .status(401)
+        .json({ error: 'Invalid credential. Please try again' });
+    }
 
     const payload = { userId: user._id };
 
@@ -59,7 +65,7 @@ authRouter.post('/', async (req: Request, res: Response) => {
       { expiresIn: '24d' },
       (err, token) => {
         if (err) throw err;
-        res.status(200).json(token);
+        res.status(200).json({ token });
       },
     );
   } catch (error) {

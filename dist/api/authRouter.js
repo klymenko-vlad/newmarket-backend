@@ -10,7 +10,7 @@ authRouter.get('/', authMiddleware, async (req, res) => {
     const { userId } = req;
     try {
         const user = await UserModel.findById(userId).select('-__v');
-        return res.status(200).json({ user });
+        return res.status(200).json(user);
     }
     catch (error) {
         console.error(error);
@@ -18,7 +18,7 @@ authRouter.get('/', authMiddleware, async (req, res) => {
     }
 });
 authRouter.post('/', async (req, res) => {
-    const { email, password } = req.body.user;
+    const { email, password } = req.body;
     if (!validateEmail(email))
         return res.status(401).send('Invalid email');
     if (password.length < 6) {
@@ -27,10 +27,15 @@ authRouter.post('/', async (req, res) => {
     try {
         const user = await UserModel.findOne({ email: email.toLowerCase() }).select('+password');
         if (!user)
-            return res.status(401).json({ error: 'No such user' });
+            return res
+                .status(401)
+                .json({ error: 'Invalid credential. Please try again' });
         const isPassword = await bcrypt.compare(password, user.password);
-        if (!isPassword)
-            return res.status(401).json({ error: 'Invalid credential' });
+        if (!isPassword) {
+            return res
+                .status(401)
+                .json({ error: 'Invalid credential. Please try again' });
+        }
         const payload = { userId: user._id };
         if (!process.env.jwtSecret) {
             throw new Error(NO_JWT_SECRET);
@@ -38,7 +43,7 @@ authRouter.post('/', async (req, res) => {
         jwt.sign(payload, process.env.jwtSecret, { expiresIn: '24d' }, (err, token) => {
             if (err)
                 throw err;
-            res.status(200).json(token);
+            res.status(200).json({ token });
         });
     }
     catch (error) {

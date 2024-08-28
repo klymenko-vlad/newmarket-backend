@@ -8,6 +8,8 @@ const buyRouter = express.Router();
 
 buyRouter.post('/create-checkout-session', async (req, res) => {
   try {
+    console.log(req.headers.origin);
+
     const params = {
       mode: 'payment',
       billing_address_collection: 'auto',

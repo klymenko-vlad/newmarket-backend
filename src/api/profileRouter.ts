@@ -23,7 +23,7 @@ profileRouter.put(
       } = {};
 
       if (name && name.length > 1) filteredBody.name = name;
-      if (email && name.length > 1) filteredBody.email = email;
+      if (email && email.length > 1) filteredBody.email = email;
       if (role) filteredBody.role = role;
 
       const updatedUser = await UserModel.findByIdAndUpdate(
@@ -56,31 +56,33 @@ profileRouter.post(
       const { oldPassword, newPassword } = req.body;
 
       if (!validatePassword(newPassword)) {
-        res.status(401).send('Invalid new Password. At least 8 characters');
+        res
+          .status(401)
+          .send({ error: 'Invalid new Password. At least 8 characters' });
       }
 
       const user = await UserModel.findById(req.userId).select('+password');
 
       if (!user) {
-        return res.status(404).send('User is not found');
+        return res.status(404).send({ error: 'User is not found' });
       }
 
       const isNewPassword = await bcrypt.compare(newPassword, user.password);
       if (isNewPassword) {
-        return res.status(401).send('Passwords are the same');
+        return res.status(401).send({ error: 'Passwords are the same' });
       }
 
       const isPassword = await bcrypt.compare(oldPassword, user.password);
       if (!isPassword) {
-        return res.status(401).send('Invalid password');
+        return res.status(401).send({ error: 'Invalid password' });
       }
 
       user.password = await bcrypt.hash(newPassword, 12);
       await user.save();
-      return res.status(200).send('Updated');
+      return res.status(200).send({ status: 'Updated' });
     } catch (error) {
       console.error(error);
-      return res.status(500).send('Server error');
+      return res.status(500).send({ error: 'Server error' });
     }
   },
 );
