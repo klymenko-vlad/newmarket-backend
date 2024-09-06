@@ -1,8 +1,8 @@
 import express from 'express';
-import authMiddleware from '../middleware/auth.middleware.js';
-import ProductModel from '../models/ProductModel.js';
-import { ERROR_CANNOT_EDIT_PRODUCT, ERROR_DESCRIPTION_TOO_LONG, ERROR_MISSING_CATEGORY, ERROR_MISSING_MAIN_PICTURE, ERROR_MISSING_PICTURES, ERROR_MISSING_PRICE, ERROR_MISSING_QUANTITY, ERROR_NAME_DESCRIPTION_LENGTH, ERROR_NAME_TOO_LONG, ERROR_NO_PRODUCTS_FOUND, ERROR_PRODUCT_NOT_FOUND, } from '../constants/itemRouterErrors.js';
-import { ERROR_NOT_AUTHENTICATED, ERROR_SERVER_ERROR, } from '../constants/errors.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import ProductModel from '../../models/ProductModel.js';
+import { ERROR_NOT_AUTHENTICATED, ERROR_SERVER_ERROR, } from '../../constants/errors.js';
+import { ERROR_CANNOT_EDIT_PRODUCT, ERROR_DESCRIPTION_TOO_LONG, ERROR_MISSING_CATEGORY, ERROR_MISSING_MAIN_PICTURE, ERROR_MISSING_PICTURES, ERROR_MISSING_PRICE, ERROR_MISSING_QUANTITY, ERROR_NAME_DESCRIPTION_LENGTH, ERROR_NAME_TOO_LONG, ERROR_NO_PRODUCTS_FOUND, ERROR_PRODUCT_NOT_FOUND, } from './constants.js';
 const itemRouter = express.Router();
 itemRouter.post('/', authMiddleware, async (req, res) => {
     const { name, price, mainPicture, pictures, description, quantity, category, rating, pastPrice, } = req.body;

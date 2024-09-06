@@ -7,11 +7,11 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import connectDb from './db/connectDB.func.js';
-import itemRouter from './api/itemRouter.js';
-import authRouter from './api/authRouter.js';
-import buyRouter from './api/buyRouter.js';
-import signupRoutes from './api/signupRouter.js';
-import profileRouter from './api/profileRouter.js';
+import itemRouter from './api/itemRouter/itemRouter.js';
+import authRouter from './api/authRouter/authRouter.js';
+import buyRouter from './api/buyRouter/buyRouter.js';
+import signupRoutes from './api/signupRouter/signupRouter.js';
+import profileRouter from './api/profileRouter/profileRouter.js';
 const app = express();
 dotenv.config({ path: './.env' });
 app.use(cors({

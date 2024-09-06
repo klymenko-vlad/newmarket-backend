@@ -1,15 +1,33 @@
 import { Request, Response } from 'express';
-import { AuthenticatedRequest } from '../interfaces/middleware.interface.js';
+import { AuthenticatedRequest } from '../../interfaces/middleware.interface.js';
 import { ParsedQs } from 'qs';
 
 import express from 'express';
-import authMiddleware from '../middleware/auth.middleware.js';
-import ProductModel from '../models/ProductModel.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import ProductModel from '../../models/ProductModel.js';
+
+import {
+  ERROR_NOT_AUTHENTICATED,
+  ERROR_SERVER_ERROR,
+} from '../../constants/errors.js';
+
+import {
+  ERROR_CANNOT_EDIT_PRODUCT,
+  ERROR_DESCRIPTION_TOO_LONG,
+  ERROR_MISSING_CATEGORY,
+  ERROR_MISSING_MAIN_PICTURE,
+  ERROR_MISSING_PICTURES,
+  ERROR_MISSING_PRICE,
+  ERROR_MISSING_QUANTITY,
+  ERROR_NAME_DESCRIPTION_LENGTH,
+  ERROR_NAME_TOO_LONG,
+  ERROR_NO_PRODUCTS_FOUND,
+  ERROR_PRODUCT_NOT_FOUND,
+} from './constants.js';
 
 const itemRouter = express.Router();
 
 // Create a Product
-
 itemRouter.post(
   '/',
   authMiddleware,
@@ -27,43 +45,39 @@ itemRouter.post(
     } = req.body;
 
     if (name.length < 1 || description.length < 1) {
-      return res
-        .status(401)
-        .send('Name and description must be at least 1 character');
+      return res.status(400).send(ERROR_NAME_DESCRIPTION_LENGTH);
     }
 
     if (description.length > 500) {
-      return res
-        .status(401)
-        .send('Description must be less than 500 characters');
+      return res.status(400).send(ERROR_DESCRIPTION_TOO_LONG);
     }
 
     if (name.length > 25) {
-      return res.status(401).send('Name must be less than 25 characters');
+      return res.status(400).send(ERROR_NAME_TOO_LONG);
     }
 
     if (!quantity) {
-      return res.status(401).send('You need to specify quantity');
+      return res.status(400).send(ERROR_MISSING_QUANTITY);
     }
 
     if (!pictures) {
-      return res.status(401).send('Please provide pictures of product');
+      return res.status(400).send(ERROR_MISSING_PICTURES);
     }
 
     if (!price) {
-      return res.status(401).send('Please provide product`s price');
+      return res.status(400).send(ERROR_MISSING_PRICE);
     }
 
     if (!category) {
-      return res.status(401).send('Please provide product`s category');
+      return res.status(400).send(ERROR_MISSING_CATEGORY);
     }
 
     if (!mainPicture) {
-      return res.status(401).send('Please provide product`s main picture');
+      return res.status(400).send(ERROR_MISSING_MAIN_PICTURE);
     }
 
     if (!req.userId) {
-      return res.status(401).send('Not authenticated');
+      return res.status(401).send(ERROR_NOT_AUTHENTICATED);
     }
 
     interface INewProduct {
@@ -104,13 +118,12 @@ itemRouter.post(
       return res.json(productCreated);
     } catch (error) {
       console.error(error);
-      return res.status(500).send('Server error');
+      return res.status(500).send(ERROR_SERVER_ERROR);
     }
   },
 );
 
-//Get all Products
-
+// Get all Products
 itemRouter.get('/', async (req: Request, res: Response) => {
   try {
     const queryObj: any = { ...req.query };
@@ -180,15 +193,11 @@ itemRouter.get('/', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
+    return res.status(500).send(ERROR_SERVER_ERROR);
   }
 });
 
-//Get one Product
-
+// Get one Product
 itemRouter.get('/:productId', async (req: Request, res: Response) => {
   try {
     const product = await ProductModel.findById(req.params.productId).populate(
@@ -196,18 +205,17 @@ itemRouter.get('/:productId', async (req: Request, res: Response) => {
     );
 
     if (!product) {
-      return res.status(404).send('Product not found');
+      return res.status(404).send(ERROR_PRODUCT_NOT_FOUND);
     }
 
     return res.json(product);
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Server error');
+    return res.status(500).send(ERROR_SERVER_ERROR);
   }
 });
 
-//Get All Products of user
-
+// Get All Products of user
 itemRouter.get('/user/:userId', async (req: Request, res: Response) => {
   try {
     let sortBy = req.query.sort as string;
@@ -248,9 +256,7 @@ itemRouter.get('/user/:userId', async (req: Request, res: Response) => {
       .sort(sortBy);
 
     if (product.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'No products found for the specified user' });
+      return res.status(404).json({ message: ERROR_NO_PRODUCTS_FOUND });
     }
 
     res.status(200).json({
@@ -261,15 +267,11 @@ itemRouter.get('/user/:userId', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
+    return res.status(500).send(ERROR_SERVER_ERROR);
   }
 });
 
-//Update Product
-
+// Update Product
 itemRouter.put(
   '/:productId',
   authMiddleware,
@@ -282,16 +284,16 @@ itemRouter.put(
       ).populate('user');
 
       if (!product) {
-        return res.status(404).send('Product not found');
+        return res.status(404).send(ERROR_PRODUCT_NOT_FOUND);
       }
 
       const isUser = product.user._id.toString() === userId;
 
       if (!isUser) {
-        return res.status(404).send('You cannot edit this product');
+        return res.status(404).send(ERROR_CANNOT_EDIT_PRODUCT);
       }
 
-      const Product = await ProductModel.findByIdAndUpdate(
+      const updatedProduct = await ProductModel.findByIdAndUpdate(
         req.params.productId,
         req.body,
         {
@@ -302,7 +304,7 @@ itemRouter.put(
 
       res.status(200).json({
         status: 'success',
-        data: Product,
+        data: updatedProduct,
       });
     } catch (error: any) {
       console.error(error);

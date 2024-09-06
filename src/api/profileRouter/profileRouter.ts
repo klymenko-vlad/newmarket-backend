@@ -1,9 +1,13 @@
 import express, { Response } from 'express';
-import authMiddleware from '../middleware/auth.middleware.js';
-import UserModel from '../models/UserModel.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import UserModel from '../../models/UserModel.js';
 import bcrypt from 'bcryptjs';
-import { AuthenticatedRequest } from '../interfaces/middleware.interface.js';
-import { validatePassword } from '../utils/validationFunctions.js';
+import { AuthenticatedRequest } from '../../interfaces/middleware.interface.js';
+import { validatePassword } from '../../utils/validationFunctions.js';
+import {
+  ERROR_INVALID_PASSWORD,
+  ERROR_SERVER_ERROR,
+} from '../../constants/errors.js';
 
 const profileRouter = express.Router();
 
@@ -43,7 +47,7 @@ profileRouter.put(
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).send('Server error');
+      return res.status(500).send(ERROR_SERVER_ERROR);
     }
   },
 );
@@ -74,7 +78,7 @@ profileRouter.post(
 
       const isPassword = await bcrypt.compare(oldPassword, user.password);
       if (!isPassword) {
-        return res.status(401).send({ error: 'Invalid password' });
+        return res.status(401).send({ error: ERROR_INVALID_PASSWORD });
       }
 
       user.password = await bcrypt.hash(newPassword, 12);
@@ -82,7 +86,7 @@ profileRouter.post(
       return res.status(200).send({ status: 'Updated' });
     } catch (error) {
       console.error(error);
-      return res.status(500).send({ error: 'Server error' });
+      return res.status(500).send({ error: ERROR_SERVER_ERROR });
     }
   },
 );

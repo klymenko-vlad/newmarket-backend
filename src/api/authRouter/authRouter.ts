@@ -3,11 +3,20 @@ import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-import authMiddleware from '../middleware/auth.middleware.js';
-import UserModel from '../models/UserModel.js';
-import { AuthenticatedRequest } from '../interfaces/middleware.interface.js';
-import { NO_JWT_SECRET, PASSWORD_LENGTH } from '../constants/errors.js';
-import { validateEmail } from '../utils/validationFunctions.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import UserModel from '../../models/UserModel.js';
+import { AuthenticatedRequest } from '../../interfaces/middleware.interface.js';
+
+import { validateEmail } from '../../utils/validationFunctions.js';
+import {
+  ERROR_INVALID_CREDENTIALS,
+  ERROR_PASSWORD_LENGTH,
+} from './constants.js';
+import {
+  ERROR_INVALID_EMAIL,
+  ERROR_NO_JWT_SECRET,
+  ERROR_SERVER_ERROR,
+} from '../../constants/errors.js';
 
 const authRouter = express.Router();
 
@@ -15,15 +24,15 @@ authRouter.get(
   '/',
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response) => {
-    const { userId } = req;
-
     try {
+      const { userId } = req;
+
       const user = await UserModel.findById(userId).select('-__v');
 
       return res.status(200).json(user);
     } catch (error) {
       console.error(error);
-      return res.status(500).send('Server error');
+      return res.status(500).send(ERROR_SERVER_ERROR);
     }
   },
 );
@@ -31,9 +40,9 @@ authRouter.get(
 authRouter.post('/', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  if (!validateEmail(email)) return res.status(401).send('Invalid email');
+  if (!validateEmail(email)) return res.status(401).send(ERROR_INVALID_EMAIL);
   if (password.length < 6) {
-    return res.status(401).send(PASSWORD_LENGTH);
+    return res.status(401).send(ERROR_PASSWORD_LENGTH);
   }
 
   try {
@@ -42,22 +51,18 @@ authRouter.post('/', async (req: Request, res: Response) => {
     );
 
     if (!user)
-      return res
-        .status(401)
-        .json({ error: 'Invalid credential. Please try again' });
+      return res.status(401).json({ error: ERROR_INVALID_CREDENTIALS });
 
     const isPassword = await bcrypt.compare(password, user.password);
 
     if (!isPassword) {
-      return res
-        .status(401)
-        .json({ error: 'Invalid credential. Please try again' });
+      return res.status(401).json({ error: ERROR_INVALID_CREDENTIALS });
     }
 
     const payload = { userId: user._id };
 
     if (!process.env.jwtSecret) {
-      throw new Error(NO_JWT_SECRET);
+      throw new Error(ERROR_NO_JWT_SECRET);
     }
     jwt.sign(
       payload,
@@ -70,7 +75,7 @@ authRouter.post('/', async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Server error');
+    return res.status(500).send(ERROR_SERVER_ERROR);
   }
 });
 

@@ -1,10 +1,11 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import authMiddleware from '../middleware/auth.middleware.js';
-import UserModel from '../models/UserModel.js';
-import { ERROR_INVALID_CREDENTIALS, ERROR_INVALID_EMAIL, ERROR_NO_JWT_SECRET, ERROR_PASSWORD_LENGTH, ERROR_SERVER_ERROR, } from '../constants/errors.js';
-import { validateEmail } from '../utils/validationFunctions.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import UserModel from '../../models/UserModel.js';
+import { validateEmail } from '../../utils/validationFunctions.js';
+import { ERROR_INVALID_CREDENTIALS, ERROR_PASSWORD_LENGTH, } from './constants.js';
+import { ERROR_INVALID_EMAIL, ERROR_NO_JWT_SECRET, ERROR_SERVER_ERROR, } from '../../constants/errors.js';
 const authRouter = express.Router();
 authRouter.get('/', authMiddleware, async (req, res) => {
     try {

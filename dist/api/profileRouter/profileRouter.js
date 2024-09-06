@@ -1,9 +1,9 @@
 import express from 'express';
-import authMiddleware from '../middleware/auth.middleware.js';
-import UserModel from '../models/UserModel.js';
+import authMiddleware from '../../middleware/auth.middleware.js';
+import UserModel from '../../models/UserModel.js';
 import bcrypt from 'bcryptjs';
-import { validatePassword } from '../utils/validationFunctions.js';
-import { ERROR_INVALID_PASSWORD, ERROR_SERVER_ERROR, } from '../constants/errors.js';
+import { validatePassword } from '../../utils/validationFunctions.js';
+import { ERROR_INVALID_PASSWORD, ERROR_SERVER_ERROR, } from '../../constants/errors.js';
 const profileRouter = express.Router();
 profileRouter.put('/update', authMiddleware, async (req, res) => {
     try {

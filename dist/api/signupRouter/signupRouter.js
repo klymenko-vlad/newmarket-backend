@@ -1,10 +1,10 @@
-import { validateEmail, validatePassword, } from '../utils/validationFunctions.js';
+import { validateEmail, validatePassword, } from '../../utils/validationFunctions.js';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import UserModel from '../models/UserModel.js';
-import { ERROR_NO_JWT_SECRET, ERROR_SERVER_ERROR, ERROR_INVALID_EMAIL, ERROR_INVALID_PASSWORD, } from '../constants/errors.js';
-import { ERROR_NAME_NOT_PROVIDED, ERROR_USER_ALREADY_EXISTS, } from '../constants/signupRouterErrors.js';
+import UserModel from '../../models/UserModel.js';
+import { ERROR_INVALID_PASSWORD, ERROR_NO_JWT_SECRET, ERROR_SERVER_ERROR, ERROR_INVALID_EMAIL, } from '../../constants/errors.js';
+import { ERROR_NAME_NOT_PROVIDED, ERROR_USER_ALREADY_EXISTS, } from './constants.js';
 const signupRoutes = express.Router();
 signupRoutes.get('/:email', async (req, res) => {
     try {
