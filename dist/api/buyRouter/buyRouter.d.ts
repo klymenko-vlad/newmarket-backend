@@ -1,2 +1,2 @@
-declare const buyRouter: import("express-serve-static-core").Router;
+declare const buyRouter: import("src/@types/express-serve-static-core/index.js").Router;
 export default buyRouter;

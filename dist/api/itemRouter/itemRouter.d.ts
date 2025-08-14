@@ -1,2 +1,2 @@
-declare const itemRouter: import("express-serve-static-core").Router;
+declare const itemRouter: import("src/@types/express-serve-static-core/index.js").Router;
 export default itemRouter;

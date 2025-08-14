@@ -1,1 +1,0 @@
-{"version":3,"file":"validateEmail.func.js","sourceRoot":"","sources":["../../src/utils/validateEmail.func.ts"],"names":[],"mappings":"AAAA,MAAM,aAAa,GAAG,CAAC,KAAa,EAAE,EAAE;IACtC,OAAO,MAAM,CAAC,KAAK,CAAC;SACjB,WAAW,EAAE;SACb,KAAK,CACJ,wJAAwJ,CACzJ,CAAC;AACN,CAAC,CAAC"}
