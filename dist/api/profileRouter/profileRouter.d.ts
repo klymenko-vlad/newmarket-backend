@@ -1,2 +1,2 @@
-declare const profileRouter: import("express-serve-static-core").Router;
+declare const profileRouter: import("src/@types/express-serve-static-core/index.js").Router;
 export default profileRouter;

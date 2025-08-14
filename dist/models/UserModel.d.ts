@@ -9,7 +9,7 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
 }, {}, {}, {}, mongoose.Document<unknown, {}, {
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -20,7 +20,9 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
+}, {}, {
+    timestamps: true;
 }> & {
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -31,9 +33,11 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
 } & {
     _id: mongoose.Types.ObjectId;
+} & {
+    __v: number;
 }, mongoose.Schema<any, mongoose.Model<any, any, any, any, any, any>, {}, {}, {}, {}, {
     timestamps: true;
 }, {
@@ -46,7 +50,7 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
 }, mongoose.Document<unknown, {}, mongoose.FlatRecord<{
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -57,7 +61,9 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
+}>, {}, mongoose.ResolveSchemaOptions<{
+    timestamps: true;
 }>> & mongoose.FlatRecord<{
     createdAt: NativeDate;
     updatedAt: NativeDate;
@@ -68,8 +74,10 @@ declare const _default: mongoose.Model<{
     role: "user" | "root" | "seller";
     profilePicUrl?: string | null | undefined;
     resetToken?: string | null | undefined;
-    expireToken?: Date | null | undefined;
+    expireToken?: NativeDate | null | undefined;
 }> & {
     _id: mongoose.Types.ObjectId;
+} & {
+    __v: number;
 }>>;
 export default _default;

@@ -1,2 +1,2 @@
-declare const signupRoutes: import("express-serve-static-core").Router;
+declare const signupRoutes: import("src/@types/express-serve-static-core/index.js").Router;
 export default signupRoutes;
